@@ -48,6 +48,8 @@ La CLI `feriactl` actúa como panel de control local-first.
 2. **Ingesta**: `feriactl ingest <repo>` lanza pipelines de indexado semántico.
 3. **Evaluación**: `feriactl eval run --set vX` ejecuta el laboratorio nocturno y genera reportes en `docs/reports/`.
 4. **Snapshots**: `feriactl snapshot create` produce artefactos firmados listos para restauración (`storage/snapshots/`).
+5. **Depuración**: `feriactl debug report` o `python scripts/debug_suite.py --json` generan instantáneas con flags de entorno,
+   nivel de logging efectivo y estado general del entorno de ejecución.
 
 ### Métricas clave
 

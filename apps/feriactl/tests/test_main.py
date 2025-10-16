@@ -31,3 +31,22 @@ def test_main_debug_flag_sets_environment(monkeypatch):
     assert exit_code == 0
     assert os.environ.get("FERIA_DEBUG") == "1"
     assert fake_parser.printed_help is True
+
+
+def test_debug_command_invokes_report(monkeypatch):
+    captured = {}
+
+    def fake_report(*, as_json):
+        captured["as_json"] = as_json
+        from feriactl.commands.base import CommandResult
+
+        return CommandResult(stdout="{}")
+
+    parser = feria_main.build_parser()
+    monkeypatch.setattr(feria_main, "setup_logging", lambda **_: None)
+    monkeypatch.setattr(feria_main.debug, "report", fake_report)
+
+    exit_code = feria_main.main(["debug", "report", "--json"])
+
+    assert exit_code == 0
+    assert captured["as_json"] is True

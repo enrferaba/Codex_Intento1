@@ -8,7 +8,7 @@ import sys
 from typing import Callable
 
 from core.logging import setup as setup_logging
-from feriactl.commands import health, ingest, queues, scale, snapshot, status
+from feriactl.commands import debug, health, ingest, queues, scale, snapshot, status
 from feriactl.commands.base import CommandResult
 
 
@@ -54,6 +54,12 @@ def build_parser() -> argparse.ArgumentParser:
     snapshot_create = snapshot_sub.add_parser("create", help="Crea un snapshot")
     snapshot_create.add_argument("--label", default=None)
     snapshot_create.set_defaults(func=_wrap_command(lambda args: snapshot.create(label=args.label)))
+
+    debug_parser = subparsers.add_parser("debug", help="Herramientas de depuración")
+    debug_sub = debug_parser.add_subparsers(dest="debug_command")
+    debug_report = debug_sub.add_parser("report", help="Muestra el informe de depuración")
+    debug_report.add_argument("--json", action="store_true", help="Imprime JSON completo")
+    debug_report.set_defaults(func=_wrap_command(lambda args: debug.report(as_json=args.json)))
 
     return parser
 
