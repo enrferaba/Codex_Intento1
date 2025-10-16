@@ -1,0 +1,27 @@
+openapi: 3.1.0
+info:
+  title: FERIA Precision Codex API
+  version: 0.1.0
+paths:
+  /v1/health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: Successful health response
+  /v1/query:
+    post:
+      summary: Ejecuta una consulta semántica
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+              required: [query]
+      responses:
+        '200':
+          description: Respuesta con citas

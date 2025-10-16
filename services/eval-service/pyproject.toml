@@ -1,0 +1,13 @@
+[project]
+name = "eval-service"
+version = "0.1.0"
+description = "Servicio de evaluación"
+requires-python = ">=3.11"
+dependencies = []
+
+[build-system]
+requires = []
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]

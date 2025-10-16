@@ -1,0 +1,17 @@
+{
+  "name": "FERIA Precision Codex",
+  "dockerFile": "Dockerfile",
+  "context": "..",
+  "postCreateCommand": "make bootstrap",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-azuretools.vscode-docker",
+        "charliermarsh.ruff",
+        "streetsidesoftware.code-spell-checker"
+      ]
+    }
+  }
+}

@@ -1,0 +1,13 @@
+[project]
+name = "ingestor"
+version = "0.1.0"
+description = "Ingestor service scaffolding"
+requires-python = ">=3.11"
+dependencies = []
+
+[build-system]
+requires = []
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]

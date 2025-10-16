@@ -1,0 +1,27 @@
+[app]
+name = "FERIA Precision Codex"
+mode = "local-first"
+
+[embeddings]
+provider = "local"
+model = "bge-m3"
+batch_size = 64
+
+[vector]
+type = "faiss"
+path = "storage/vector/index.faiss"
+dim = 768
+
+[retrieval]
+top_k = 20
+rerank_top_k = 6
+use_graph_hop = true
+
+[agent]
+max_runtime_seconds = 120
+no_network = true
+policy = "configs/policies/sandbox.policy.yaml"
+
+[observability]
+prometheus_url = "http://localhost:9090"
+grafana_url = "http://localhost:3000"

@@ -1,0 +1,18 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: feria-sidecar-injector
+webhooks:
+  - name: injector.feria.local
+    rules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        operations: ["CREATE"]
+        resources: ["pods"]
+    clientConfig:
+      service:
+        namespace: feria
+        name: mesh-sidecar
+        path: /mutate
+    admissionReviewVersions: ["v1"]
+    sideEffects: None
