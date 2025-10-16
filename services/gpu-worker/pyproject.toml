@@ -1,0 +1,10 @@
+[project]
+name = "gpu-worker"
+version = "0.1.0"
+description = "GPU inference worker"
+requires-python = ">=3.11"
+dependencies = []
+
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"

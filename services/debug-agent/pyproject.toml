@@ -1,0 +1,10 @@
+[project]
+name = "debug-agent"
+version = "0.1.0"
+description = "Agente de depuración"
+requires-python = ">=3.11"
+dependencies = []
+
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"

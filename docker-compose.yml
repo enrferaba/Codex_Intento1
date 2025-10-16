@@ -1,0 +1,72 @@
+version: "3.9"
+
+services:
+  api-gateway:
+    build: ./services/api-gateway
+    command: uvicorn api_gateway.main:app --host 0.0.0.0 --port 8000 --reload
+    environment:
+      - FERIA_ENV=dev
+    volumes:
+      - ./services/api-gateway:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - retrieval
+      - orchestrator
+
+  orchestrator:
+    build: ./services/orchestrator
+    command: python -m orchestrator.scheduler
+    environment:
+      - FERIA_ENV=dev
+    volumes:
+      - ./services/orchestrator:/app
+
+  retrieval:
+    build: ./services/retrieval
+    command: uvicorn retrieval.service:app --host 0.0.0.0 --port 8100 --reload
+    environment:
+      - FERIA_ENV=dev
+    volumes:
+      - ./services/retrieval:/app
+    depends_on:
+      - vector-db
+
+  vector-db:
+    image: ghcr.io/astral-sh/uvx-faiss:latest
+    volumes:
+      - ./storage/vector:/vector
+    profiles:
+      - dev
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: feria
+      POSTGRES_USER: feria
+      POSTGRES_PASSWORD: feria
+    volumes:
+      - ./storage/db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    profiles:
+      - dev
+
+  minio:
+    image: quay.io/minio/minio:RELEASE.2024-05-10T01-41-11Z
+    command: server /data --console-address :9090
+    environment:
+      MINIO_ROOT_USER: feria
+      MINIO_ROOT_PASSWORD: feriaferia
+    volumes:
+      - ./storage/artifacts:/data
+    ports:
+      - "9000:9000"
+      - "9090:9090"
+    profiles:
+      - dev
+
+profiles:
+  dev: {}
+  prod: {}
+  eval: {}

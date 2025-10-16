@@ -1,0 +1,13 @@
+[project]
+name = "feriactl"
+version = "0.1.0"
+description = "CLI de administración para FERIA Precision Codex"
+requires-python = ">=3.11"
+dependencies = ["typer>=0.12", "rich>=13.7", "httpx>=0.27"]
+
+[project.scripts]
+feriactl = "feriactl.main:app"
+
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"

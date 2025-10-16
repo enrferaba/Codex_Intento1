@@ -1,0 +1,10 @@
+[project]
+name = "api-gateway"
+version = "0.1.0"
+description = "FastAPI gateway"
+requires-python = ">=3.11"
+dependencies = ["fastapi>=0.111", "uvicorn>=0.29"]
+
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"

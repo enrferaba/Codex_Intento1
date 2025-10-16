@@ -1,0 +1,20 @@
+network: disabled
+cpu_quota: 1.0
+memory_limit: 2GiB
+timeout_sec: 120
+workdir_mode: copy-on-write
+allowlist:
+  - python
+  - pip
+  - pytest
+  - coverage
+  - ruff
+  - mypy
+  - bandit
+  - ls
+  - cat
+  - echo
+denylist:
+  - rm
+  - curl
+  - wget

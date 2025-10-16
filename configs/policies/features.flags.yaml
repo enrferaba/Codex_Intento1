@@ -1,0 +1,4 @@
+use_speculative: true
+use_self_consistency: false
+use_semantic_cache: true
+kill_switch_enabled: true

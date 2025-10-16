@@ -1,0 +1,23 @@
+{
+  "title": "RAG Quality",
+  "panels": [
+    {
+      "type": "graph",
+      "title": "nDCG@5",
+      "targets": [
+        {
+          "expr": "avg(rag_ndcg5)"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Precision@Coverage",
+      "targets": [
+        {
+          "expr": "avg(precision_at_coverage)"
+        }
+      ]
+    }
+  ]
+}
