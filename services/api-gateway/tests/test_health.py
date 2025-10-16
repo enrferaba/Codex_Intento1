@@ -1,5 +1,4 @@
-from fastapi.testclient import TestClient
-
+from api_gateway.framework import TestClient
 from api_gateway.main import app
 
 

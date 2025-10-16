@@ -3,7 +3,7 @@ name = "feria-core"
 version = "0.1.0"
 description = "Utilidades compartidas del núcleo"
 requires-python = ">=3.11"
-dependencies = ["pydantic>=2.7"]
+dependencies = []
 
 [build-system]
 requires = ["hatchling>=1.24"]

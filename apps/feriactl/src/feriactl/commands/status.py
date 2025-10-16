@@ -1,54 +1,47 @@
-"""Comandos de estado para feriactl."""
+"""Comandos relacionados con el estado del sistema."""
 
 from __future__ import annotations
 
-from typing import Iterable
+from typing import Iterable, Sequence, Type
 
-import typer
-
+from feriactl.commands.base import CommandResult
 from feriactl.utils.api import FeriaAPI, FeriaAPIError
 from feriactl.utils.tabulate import render
 
-app = typer.Typer(help="Consultar estado")
 
+def show(base_url: str | None = None, api_factory: Type[FeriaAPI] | None = None) -> CommandResult:
+    """Obtiene el estado desde la API y devuelve una tabla amigable."""
 
-def _component_rows(components: Iterable[dict[str, object]]) -> list[tuple[str, str, str]]:
-    rows: list[tuple[str, str, str]] = []
-    for component in components:
-        name = str(component.get("name", "desconocido"))
-        status = str(component.get("status", "desconocido"))
-        detail_raw = component.get("detail", "")
-        detail = "" if detail_raw is None else str(detail_raw)
-        rows.append((name, status, detail))
-    return rows
-
-
-@app.command()
-def show(
-    base_url: str | None = typer.Option(
-        None,
-        "--base-url",
-        "-b",
-        help="URL base de la API (prioriza FERIA_API_URL).",
-    ),
-) -> None:
-    """Muestra el estado resumido de los componentes reportados por la API."""
-
+    factory = api_factory or FeriaAPI
     try:
-        with FeriaAPI(base_url=base_url) as api:
+        with factory(base_url=base_url) as api:
             payload = api.get_json("/v1/health")
-    except FeriaAPIError as exc:  # pragma: no cover - CLI maneja error
-        typer.secho(str(exc), err=True, fg=typer.colors.RED)
-        raise typer.Exit(code=1) from exc
+    except FeriaAPIError as exc:
+        return CommandResult(exit_code=1, stderr=str(exc))
 
-    components = payload.get("components", []) if isinstance(payload, dict) else []
+    components = _normalise_components(payload.get("components")) if isinstance(payload, dict) else []
     if not components:
-        typer.echo("La API no devolvió componentes de salud.")
-        return
+        return CommandResult(stdout="La API no devolvió componentes de salud.")
 
-    table = render(["Componente", "Estado", "Detalle"], _component_rows(components))
-    typer.echo(table)
-    typer.echo("")
-    typer.echo(
+    table = render(["Componente", "Estado", "Detalle"], components)
+    footer = (
         f"Versión: {payload.get('version', 'desconocida')} · Uptime: {payload.get('uptime_seconds', '?')} s"
+        if isinstance(payload, dict)
+        else ""
     )
+    stdout_lines = [table, "", footer] if footer else [table]
+    return CommandResult(stdout="\n".join(stdout_lines).rstrip())
+
+
+def _normalise_components(raw_components: object) -> list[Sequence[str]]:
+    rows: list[Sequence[str]] = []
+    if not isinstance(raw_components, Iterable):
+        return rows
+    for item in raw_components:
+        if isinstance(item, dict):
+            name = str(item.get("name", "desconocido"))
+            status = str(item.get("status", "desconocido"))
+            detail_raw = item.get("detail", "")
+            detail = "" if detail_raw is None else str(detail_raw)
+            rows.append((name, status, detail))
+    return rows

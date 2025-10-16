@@ -1,12 +1,9 @@
-"""Comando scale placeholder."""
+"""Comandos de escalado."""
 
 from __future__ import annotations
 
-import typer
-
-app = typer.Typer(help="Escalar workers")
+from feriactl.commands.base import CommandResult
 
 
-@app.command()
-def set(agent: int = typer.Option(2), indexing: int = typer.Option(4)) -> None:
-    typer.echo(f"Scaling agent={agent}, indexing={indexing} (placeholder)")
+def set(agent: int = 2, indexing: int = 4) -> CommandResult:
+    return CommandResult(stdout=f"Scaling agent={agent}, indexing={indexing} (placeholder)")

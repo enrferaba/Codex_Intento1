@@ -1,36 +1,30 @@
-"""Comandos relacionados con el estado general del sistema."""
+"""Comandos de salud para ``feriactl``."""
 
 from __future__ import annotations
 
 import json
+from typing import Type
 
-import typer
-
+from feriactl.commands.base import CommandResult
 from feriactl.utils.api import FeriaAPI, FeriaAPIError
 
-app = typer.Typer(help="Salud del sistema")
 
-
-@app.command()
 def verbose(
-    base_url: str | None = typer.Option(
-        None,
-        "--base-url",
-        "-b",
-        help="URL base de la API (prioriza FERIA_API_URL).",
-    ),
-    pretty: bool = typer.Option(True, help="Formatea la salida JSON."),
-) -> None:
-    """Imprime el payload completo del endpoint de salud."""
+    base_url: str | None = None,
+    pretty: bool = True,
+    api_factory: Type[FeriaAPI] | None = None,
+) -> CommandResult:
+    """Devuelve el payload JSON de ``/v1/health``."""
 
+    factory = api_factory or FeriaAPI
     try:
-        with FeriaAPI(base_url=base_url) as api:
+        with factory(base_url=base_url) as api:
             payload = api.get_json("/v1/health")
-    except FeriaAPIError as exc:  # pragma: no cover - CLI maneja error
-        typer.secho(str(exc), err=True, fg=typer.colors.RED)
-        raise typer.Exit(code=1) from exc
+    except FeriaAPIError as exc:
+        return CommandResult(exit_code=1, stderr=str(exc))
 
     if pretty:
-        typer.echo(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False))
+        text = json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False)
     else:
-        typer.echo(json.dumps(payload))
+        text = json.dumps(payload, separators=(",", ":"), ensure_ascii=False)
+    return CommandResult(stdout=text)

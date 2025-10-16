@@ -1,45 +1,49 @@
-"""Health endpoint providing structured service metadata."""
+"""Ruta de salud minimalista."""
 
 from __future__ import annotations
 
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from typing import Final
 
-from fastapi import APIRouter
-from pydantic import BaseModel
+from api_gateway.framework import Router
 
-router = APIRouter(prefix="/v1", tags=["health"])
+router = Router(prefix="/v1")
 
 _SERVICE_START: Final[datetime] = datetime.now(timezone.utc)
 _SERVICE_VERSION: Final[str] = "0.1.0"
 
 
-class ComponentStatus(BaseModel):
-    """Represents the health of a single subsystem."""
-
+@dataclass(slots=True)
+class ComponentStatus:
     name: str
     status: str
     detail: str | None = None
 
 
-class HealthPayload(BaseModel):
-    """Top level payload for the health endpoint."""
-
+@dataclass(slots=True)
+class HealthPayload:
     status: str
     version: str
     uptime_seconds: int
     components: list[ComponentStatus]
 
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "status": self.status,
+            "version": self.version,
+            "uptime_seconds": self.uptime_seconds,
+            "components": [asdict(component) for component in self.components],
+        }
 
-@router.get("/health", response_model=HealthPayload)
-def health() -> HealthPayload:
-    """Return a machine friendly view of the gateway status."""
 
+@router.get("/health")
+def health() -> dict[str, object]:
     uptime = datetime.now(timezone.utc) - _SERVICE_START
-    components = [ComponentStatus(name="api-gateway", status="ok")]
-    return HealthPayload(
+    payload = HealthPayload(
         status="ok",
         version=_SERVICE_VERSION,
         uptime_seconds=max(int(uptime.total_seconds()), 0),
-        components=components,
+        components=[ComponentStatus(name="api-gateway", status="ok")],
     )
+    return payload.to_dict()

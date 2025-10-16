@@ -1,13 +1,10 @@
-"""Comando queues."""
+"""Comandos para gestionar colas."""
 
 from __future__ import annotations
 
-import typer
-
-app = typer.Typer(help="Gestiona colas")
+from feriactl.commands.base import CommandResult
 
 
-@app.command()
-def list(stats: bool = typer.Option(False, help="Mostrar estadísticas")) -> None:
-    suffix = " con stats" if stats else ""
-    typer.echo(f"Queues placeholder{suffix}")
+def list(stats: bool = False) -> CommandResult:  # noqa: A003 - compatibilidad con nombre del comando
+    suffix = " con estadísticas" if stats else ""
+    return CommandResult(stdout=f"Queues placeholder{suffix}")

@@ -1,12 +1,28 @@
-"""FastAPI retrieval service placeholder."""
+"""Servicio de retrieval mínimo."""
 
 from __future__ import annotations
 
-from fastapi import FastAPI
 
-app = FastAPI()
+class App:
+    def __init__(self) -> None:
+        self._routes: dict[tuple[str, str], callable] = {}
+
+    def route(self, method: str, path: str):
+        def decorator(func):
+            self._routes[(method, path)] = func
+            return func
+
+        return decorator
+
+    def handle(self, method: str, path: str):
+        handler = self._routes[(method, path)]
+        status, payload = handler()
+        return status, payload
 
 
-@app.get("/health")
-def health() -> dict[str, str]:
-    return {"status": "ok"}
+app = App()
+
+
+@app.route("GET", "/health")
+def health() -> tuple[int, dict[str, str]]:
+    return 200, {"status": "ok"}

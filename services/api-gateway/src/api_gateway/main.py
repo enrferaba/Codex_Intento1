@@ -1,11 +1,11 @@
-"""FastAPI gateway placeholder."""
+"""Aplicación HTTP simplificada."""
 
 from __future__ import annotations
 
-from fastapi import FastAPI
+from api_gateway import routes
+from api_gateway.framework import App
 
-from api_gateway.routes import health, query
-
-app = FastAPI(title="FERIA Precision Codex API")
-app.include_router(health.router)
-app.include_router(query.router)
+app = App(title="FERIA Precision Codex API")
+app.include_router(routes.health.router)
+app.include_router(routes.query.router)
+app.include_router(routes.admin.router)

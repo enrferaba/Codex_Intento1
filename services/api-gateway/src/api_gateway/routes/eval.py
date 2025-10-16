@@ -1,10 +1,10 @@
-"""Eval endpoints."""
+"""Rutas de evaluación."""
 
 from __future__ import annotations
 
-from fastapi import APIRouter
+from api_gateway.framework import Router
 
-router = APIRouter(prefix="/v1", tags=["eval"])
+router = Router(prefix="/v1")
 
 
 @router.get("/eval/report")

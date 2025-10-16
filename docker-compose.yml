@@ -3,7 +3,7 @@ version: "3.9"
 services:
   api-gateway:
     build: ./services/api-gateway
-    command: uvicorn api_gateway.main:app --host 0.0.0.0 --port 8000 --reload
+    command: python -c "print('api-gateway dev container')"
     environment:
       - FERIA_ENV=dev
     volumes:
@@ -24,7 +24,7 @@ services:
 
   retrieval:
     build: ./services/retrieval
-    command: uvicorn retrieval.service:app --host 0.0.0.0 --port 8100 --reload
+    command: python -c "print('retrieval dev container')"
     environment:
       - FERIA_ENV=dev
     volumes:

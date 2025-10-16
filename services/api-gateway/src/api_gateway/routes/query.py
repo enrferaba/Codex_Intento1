@@ -1,14 +1,15 @@
-"""Query endpoint placeholder."""
+"""Endpoint de consulta simplificado."""
 
 from __future__ import annotations
 
-from fastapi import APIRouter
+from api_gateway.framework import Router
 
-router = APIRouter(prefix="/v1", tags=["query"])
+router = Router(prefix="/v1")
 
 
 @router.post("/query")
-def query(payload: dict[str, str]) -> dict[str, object]:
+def query(payload: dict[str, str] | None = None) -> dict[str, object]:
+    payload = payload or {}
     question = payload.get("query", "")
     return {
         "answer": f"Respuesta placeholder para: {question}",

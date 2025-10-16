@@ -1,12 +1,12 @@
-"""Admin endpoints."""
+"""Rutas administrativas."""
 
 from __future__ import annotations
 
-from fastapi import APIRouter
+from api_gateway.framework import Router
 
-router = APIRouter(prefix="/v1/admin", tags=["admin"])
+router = Router(prefix="/v1/admin")
 
 
 @router.post("/kill-switch")
-def kill_switch(enabled: bool) -> dict[str, bool]:
+def kill_switch(enabled: bool | None = None) -> dict[str, bool | None]:
     return {"enabled": enabled}

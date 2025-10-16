@@ -1,15 +1,23 @@
-"""Dependencia de autenticación placeholder."""
+"""Dependencias de autenticación minimalistas."""
 
 from __future__ import annotations
 
-from fastapi import Depends, HTTPException, status
+
+class AuthError(RuntimeError):
+    def __init__(self, status_code: int, detail: str) -> None:
+        super().__init__(detail)
+        self.status_code = status_code
+        self.detail = detail
+
+
+HTTP_401_UNAUTHORIZED = 401
 
 
 def verify_token(token: str | None = None) -> str:
     if not token:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token requerido")
+        raise AuthError(status_code=HTTP_401_UNAUTHORIZED, detail="Token requerido")
     return token
 
 
-def get_current_token(token: str = Depends(verify_token)) -> str:
-    return token
+def get_current_token(token: str | None = None) -> str:
+    return verify_token(token)

@@ -1,20 +1,32 @@
-import httpx
+from __future__ import annotations
+
+import json
+
 import pytest
 
-from feriactl.utils.api import FeriaAPI, FeriaAPIError
+from feriactl.utils.api import FeriaAPI, FeriaAPIError, TransportResponse
 
 
-def test_get_json_success(monkeypatch):
-    transport = httpx.MockTransport(lambda request: httpx.Response(200, json={"status": "ok"}))
+def _transport_from_callable(fn):
+    def _inner(method: str, url: str, body: bytes | None, headers, timeout: float) -> TransportResponse:
+        return fn(method, url, body, headers, timeout)
 
-    with FeriaAPI(base_url="http://test", transport=transport) as api:
+    return _inner
+
+
+def test_get_json_success():
+    def handler(method, url, body, headers, timeout):  # noqa: ANN001 - firma definida por pruebas
+        return TransportResponse(200, json.dumps({"status": "ok"}).encode("utf-8"), {})
+
+    with FeriaAPI(base_url="http://test", transport=_transport_from_callable(handler)) as api:
         assert api.get_json("/v1/health") == {"status": "ok"}
 
 
 def test_http_error_raises_custom_exception():
-    transport = httpx.MockTransport(lambda request: httpx.Response(500, json={"detail": "boom"}))
+    def handler(method, url, body, headers, timeout):
+        return TransportResponse(500, json.dumps({"detail": "boom"}).encode("utf-8"), {})
 
-    with FeriaAPI(base_url="http://test", transport=transport) as api:
+    with FeriaAPI(base_url="http://test", transport=_transport_from_callable(handler)) as api:
         with pytest.raises(FeriaAPIError) as excinfo:
             api.get_json("/boom")
         assert "500" in str(excinfo.value)
@@ -26,12 +38,11 @@ def test_base_url_can_be_configured_via_environment(monkeypatch):
 
     captured = {}
 
-    def handler(request: httpx.Request) -> httpx.Response:
-        captured["url"] = str(request.url)
-        return httpx.Response(200, json={"status": "ok"})
+    def handler(method, url, body, headers, timeout):
+        captured["url"] = url
+        return TransportResponse(200, json.dumps({"status": "ok"}).encode("utf-8"), {})
 
-    transport = httpx.MockTransport(handler)
-    with FeriaAPI(transport=transport) as api:
+    with FeriaAPI(transport=_transport_from_callable(handler)) as api:
         api.get_json("/v1/health")
 
     assert captured["url"].startswith("http://env")

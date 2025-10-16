@@ -1,12 +1,12 @@
-"""Ingest endpoint placeholder."""
+"""Endpoint de ingesta."""
 
 from __future__ import annotations
 
-from fastapi import APIRouter
+from api_gateway.framework import Router
 
-router = APIRouter(prefix="/v1", tags=["ingest"])
+router = Router(prefix="/v1")
 
 
 @router.post("/ingest")
-def ingest(payload: dict[str, str]) -> dict[str, str]:
+def ingest(payload: dict[str, str] | None = None) -> dict[str, str]:
     return {"job_id": "ingest-placeholder"}

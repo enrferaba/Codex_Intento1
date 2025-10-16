@@ -1,8 +1,9 @@
+from __future__ import annotations
+
 import json
 
-from typer.testing import CliRunner
-
-from feriactl.main import app
+from feriactl.commands import health
+from feriactl.commands.base import CommandResult
 
 
 class _FakeAPI:
@@ -21,11 +22,11 @@ class _FakeAPI:
 
 
 def test_health_verbose_prints_json(monkeypatch):
-    runner = CliRunner()
-    monkeypatch.setattr("feriactl.commands.health.FeriaAPI", _FakeAPI)
+    monkeypatch.setattr(health, "FeriaAPI", _FakeAPI)
 
-    result = runner.invoke(app, ["health", "verbose", "--pretty", "False"])
+    result = health.verbose(pretty=False)
 
+    assert isinstance(result, CommandResult)
     assert result.exit_code == 0
-    payload = json.loads(result.stdout.strip())
+    payload = json.loads(result.stdout)
     assert payload["status"] == "ok"

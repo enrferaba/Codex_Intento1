@@ -1,12 +1,12 @@
-"""Agent run endpoint."""
+"""Endpoint para ejecutar el agente."""
 
 from __future__ import annotations
 
-from fastapi import APIRouter
+from api_gateway.framework import Router
 
-router = APIRouter(prefix="/v1", tags=["agent"])
+router = Router(prefix="/v1")
 
 
 @router.post("/agent/run")
-def agent_run(payload: dict[str, object]) -> dict[str, str]:
+def agent_run(payload: dict[str, object] | None = None) -> dict[str, str]:
     return {"run_id": "run-placeholder", "status": "queued"}

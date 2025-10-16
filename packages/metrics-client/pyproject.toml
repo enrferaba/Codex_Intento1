@@ -3,7 +3,7 @@ name = "metrics-client"
 version = "0.1.0"
 description = "Cliente Prometheus minimal"
 requires-python = ">=3.11"
-dependencies = ["httpx>=0.27"]
+dependencies = []
 
 [build-system]
 requires = ["hatchling>=1.24"]

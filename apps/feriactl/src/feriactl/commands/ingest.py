@@ -1,12 +1,9 @@
-"""Comando ingest."""
+"""Comandos de ingesta placeholder."""
 
 from __future__ import annotations
 
-import typer
-
-app = typer.Typer(help="Lanzar ingestas")
+from feriactl.commands.base import CommandResult
 
 
-@app.command()
-def run(repo: str) -> None:
-    typer.echo(f"Ingest placeholder for {repo}")
+def run(repo: str) -> CommandResult:
+    return CommandResult(stdout=f"Ingest placeholder for {repo}")

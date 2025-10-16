@@ -1,6 +1,7 @@
-from typer.testing import CliRunner
+from __future__ import annotations
 
-from feriactl.main import app
+from feriactl.commands.base import CommandResult
+from feriactl.commands import status
 from feriactl.utils.api import FeriaAPIError
 
 
@@ -28,11 +29,10 @@ class _FakeAPI:
 
 
 def test_status_show_renders_table(monkeypatch):
-    runner = CliRunner()
-    monkeypatch.setattr("feriactl.commands.status.FeriaAPI", _FakeAPI)
+    monkeypatch.setattr(status, "FeriaAPI", _FakeAPI)
+    result = status.show()
 
-    result = runner.invoke(app, ["status", "show"])
-
+    assert isinstance(result, CommandResult)
     assert result.exit_code == 0
     assert "api-gateway" in result.stdout
     assert "retrieval" in result.stdout
@@ -44,10 +44,9 @@ def test_status_show_handles_api_error(monkeypatch):
         def get_json(self, path: str):  # type: ignore[override]
             raise FeriaAPIError("fallo")
 
-    monkeypatch.setattr("feriactl.commands.status.FeriaAPI", _ErrorAPI)
-    runner = CliRunner()
+    monkeypatch.setattr(status, "FeriaAPI", _ErrorAPI)
 
-    result = runner.invoke(app, ["status", "show"])
+    result = status.show()
 
     assert result.exit_code == 1
-    assert "fallo" in result.stdout
+    assert "fallo" in result.stderr
