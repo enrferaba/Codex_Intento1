@@ -1,0 +1,16 @@
+[project]
+name = "feriactl"
+version = "0.1.0"
+description = "CLI de administración para FERIA Precision Codex"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+feriactl = "feriactl.main:main"
+
+[build-system]
+requires = []
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]

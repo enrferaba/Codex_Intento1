@@ -1,0 +1,14 @@
+{
+  "title": "GPU Utilization",
+  "panels": [
+    {
+      "type": "graph",
+      "title": "GPU Util",
+      "targets": [
+        {
+          "expr": "avg(nvidia_gpu_utilization)"
+        }
+      ]
+    }
+  ]
+}

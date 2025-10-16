@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.eggs/
+.env
+.venv/
+.python-version
+
+# Build
+build/
+dist/
+*.wheel
+
+# Editors
+.vscode/
+.idea/
+.DS_Store
+
+# Data & artifacts
+storage/db/*
+storage/vector/*
+storage/artifacts/*
+storage/logs/*
+storage/snapshots/*
+!storage/**/.gitkeep
+
+# Coverage & reports
+.coverage
+htmlcov/
+coverage.xml
+
+# Docker
+*.log
+*.pid
+.envrc
+
+# Node / Frontend (future)
+node_modules/
+*.lock

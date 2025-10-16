@@ -1,0 +1,5 @@
+* text=auto eol=lf
+
+# Treat diagrams and binaries as binary
+docs/diagrams/* binary
+infra/grafana/dashboards/*.json linguist-language=JSON

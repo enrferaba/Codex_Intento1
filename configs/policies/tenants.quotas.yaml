@@ -1,0 +1,17 @@
+- tenant: default
+  fast:
+    rate: 30
+    burst: 60
+    max_inflight: 50
+  realtime:
+    rate: 20
+    burst: 40
+    max_inflight: 30
+  batch:
+    rate: 10
+    burst: 20
+    max_inflight: 200
+  eval:
+    rate: 2
+    burst: 4
+    max_inflight: 20

@@ -1,0 +1,11 @@
+# Default owners
+*       @feria/core-team
+
+# Critical services
+/services/api-gateway/   @feria/api-team
+/services/orchestrator/  @feria/platform
+/services/model-gateway/ @feria/llm-serving
+/services/sandbox-runner/ @feria/security
+
+# Docs
+/docs/ @feria/docs

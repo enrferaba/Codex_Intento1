@@ -1,0 +1,14 @@
+[defaults]
+small = "phi-3.5-mini"
+medium = "llama3.1:8b-instruct"
+large = "qwen2.5-coder:14b"
+
+[routing]
+low_diff = "small"
+mid_diff = "medium"
+high_diff = "large"
+
+[canary]
+traffic_percent = 15
+judge_model = "gpt-4o-mini"
+metrics = ["p95", "ndcg@5", "ece", "cost"]
