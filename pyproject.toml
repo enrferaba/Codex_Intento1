@@ -5,7 +5,7 @@ description = "FERIA Precision Codex monorepo workspace"
 readme = "README.md"
 authors = [{ name = "FERIA Precision Codex", email = "team@feria.local" }]
 requires-python = ">=3.11"
-license = { text = "MIT" }
+license = "MIT"
 dependencies = []
 
 [build-system]
@@ -14,6 +14,9 @@ requires = [
   "wheel"
 ]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = []
 
 [tool.uv]
 dev-dependencies = [

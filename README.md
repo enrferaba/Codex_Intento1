@@ -22,6 +22,7 @@ Documentación complementaria:
 - `docs/rfcs/` almacena decisiones de arquitectura (ADRs).
 - `docs/runbooks/` ofrece guías operativas para incidentes comunes.
 - `docs/api/openapi.yaml` expone el contrato inicial de la API.
+- `docs/Lienzo_maestro.md` conserva el lienzo maestro con las instrucciones completas del programa (**no borrar**).
 
 ## 2. Desplegar la plataforma
 
@@ -50,12 +51,14 @@ La CLI `feriactl` actúa como panel de control local-first.
 4. **Snapshots**: `feriactl snapshot create` produce artefactos firmados listos para restauración (`storage/snapshots/`).
 5. **Depuración**: `feriactl debug report` o `python scripts/debug_suite.py --json` generan instantáneas con flags de entorno,
    nivel de logging efectivo y estado general del entorno de ejecución.
+6. **Simulación de carga**: `python scripts/simulate_load.py --with-governor --target-util 0.8` emula ráfagas por cola, aplica el
+   `GpuGovernor` PID y reporta la escala de concurrencia, micro-batches y límites de tokens recomendados.
 
 ### Métricas clave
 
 - `rag_ndcg5`, `rag_latency_seconds` (Prometheus).
 - `precision_at_coverage`, `eval_ece` (Eval service).
-- `gpu_utilization`, `gpu_memory_bytes` (governor + exporters).
+- `gpu_utilization`, `gpu_memory_bytes` y decisiones de `GpuGovernor` (exporters + simulador).
 
 ### Runbooks destacados
 
@@ -72,5 +75,16 @@ La CLI `feriactl` actúa como panel de control local-first.
 - Añadir suites de pruebas unitarias e integraciones completas en los directorios `tests/`.
 - Automatizar despliegues con los workflows de GitHub Actions definidos en `.github/workflows/`.
 - Documentar cambios relevantes en `docs/reports/` y mantener actualizado el changelog de prompts y modelos.
+
+## 5. Bitácoras y depuración reproducible
+
+La plataforma incorpora utilidades para capturar el estado completo del entorno y facilitar auditorías posteriores:
+
+1. Ejecuta `python scripts/debug_suite.py --json --full --output docs/reports/debug_sessions.jsonl --append` para generar un snapshot estructurado que incluye variables de entorno relevantes, configuración activa de logging, `sys.path` y el estado del repositorio (rama, commit y *dirty flag*).
+2. Consulta el histórico acumulado en `docs/reports/debug_sessions.md` y `docs/reports/debug_progress.md` para entender qué verificaciones se han realizado y cuáles quedan pendientes.
+3. Desde la CLI, `feriactl debug report --full` produce la misma información y permite compartirla con el equipo de SRE o soporte.
+4. Añade notas manuales sobre incidencias o hallazgos en `docs/reports/debug_progress.md` para mantener el contexto operativo.
+
+> Consejo: incluye la salida más reciente de `scripts/debug_suite.py` como artefacto en tus PRs cuando afecten a infraestructura, flujos de despliegue o tooling local. Así el revisor puede reproducir el entorno exacto y validar los cambios sin ambigüedades.
 
 Para más contexto estratégico, revisa el documento “Lienzo maestro — FERIA Precision Codex” que inspiró este scaffolding y coordina cada sprint con los criterios de aceptación definidos allí.

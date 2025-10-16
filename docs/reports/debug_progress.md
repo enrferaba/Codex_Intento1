@@ -83,3 +83,16 @@ Documenta aquí los hallazgos relevantes, por ejemplo:
 * La primera ejecución fallida permanece registrada como evidencia del
   comportamiento ante errores; la posterior repetición exitosa valida las
   comprobaciones con estado `ok`.
+
+## Sesión 2025-10-17 — Governor y Scheduler
+
+* Se implementó el `GpuGovernor` con PID + feed-forward, verificando los casos
+  de aumento de escala y protección ante límites térmicos/memoria a través de
+  pruebas unitarias dedicadas.
+* El `JobScheduler` ahora reparte cargas respetando perfiles MIG, temperatura y
+  utilización máximas de GPU.
+* `scripts/simulate_load.py` registra la decisión del governor tras cada
+  simulación y expone nuevas banderas `--with-governor`/`--target-util` para
+  acompañar la instrumentación descrita en el lienzo maestro.
+* El histórico JSONL se ha actualizado automáticamente con la nueva ejecución
+  completa de la suite de depuración.
