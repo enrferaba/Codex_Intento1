@@ -32,6 +32,7 @@ class DebugSnapshot:
     git_dirty: bool | None
     env: Mapping[str, str]
     loaded_modules: tuple[str, ...]
+    python_path: tuple[str, ...]
 
     def to_dict(self) -> dict[str, Any]:
         """Convierte la instantánea en un diccionario listo para serialización."""
@@ -117,6 +118,7 @@ def collect_snapshot(env_keys: Iterable[str] | None = None) -> DebugSnapshot:
         git_dirty=dirty,
         env=env_snapshot,
         loaded_modules=tuple(sorted(sys.modules)),
+        python_path=tuple(sys.path),
     )
 
 
@@ -137,6 +139,7 @@ def format_snapshot(snapshot: DebugSnapshot, *, indent: int = 2) -> str:
         "git_dirty": snapshot.git_dirty,
         "env": dict(snapshot.env),
         "loaded_modules_count": len(snapshot.loaded_modules),
+        "python_path": list(snapshot.python_path),
     }
     return json.dumps(payload, indent=indent, sort_keys=True)
 

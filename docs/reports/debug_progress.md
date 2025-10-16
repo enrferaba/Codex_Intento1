@@ -35,9 +35,28 @@ depuración:
 * `working_directory` — ruta absoluta desde la que se ejecutó el informe.
 * `git_branch` y `git_commit` — referencia corta a la rama y el commit activo.
 * `git_dirty` — indicador booleano de si hay cambios sin confirmar.
+* `python_path` — lista exacta de rutas en `sys.path` para reproducir cómo se
+  resolvieron los imports durante la sesión.
 
 Estos campos aparecen tanto en el JSON como en la salida formateada, lo que
 facilita correlacionar la depuración con el estado del repositorio.
+
+## Modo completo y captura de comandos
+
+* `scripts/debug_suite.py` acepta `--command` para ejecutar y registrar cualquier
+  instrucción adicional. Las salidas (stdout/stderr), códigos de retorno y el
+  tiempo de ejecución quedan incrustados en el informe.
+* El flag `--full` añade automáticamente dos comprobaciones clave: `python -m
+  feriactl.main debug report --json` y `python scripts/dev_debug.py ...`, además
+  de habilitar `pytest` al final del flujo.
+* El informe JSON añade un bloque `command_results` con el detalle de cada
+  comando; el formato de texto imprime una sección `# Resultados de comandos`
+  para inspección humana inmediata.
+* Si algún comando falla, el script finaliza con código ≠ 0 y emite una alerta en
+  stderr (`Al menos un comando finalizó con errores`).
+
+> Mantén estos comandos documentados aquí tras cada sesión para que el equipo
+> pueda reproducir paso a paso las comprobaciones ejecutadas.
 
 ## Qué registrar
 
@@ -49,3 +68,18 @@ Documenta aquí los hallazgos relevantes, por ejemplo:
 
 > Actualiza este diario tras cada sesión de depuración relevante para mantener
 > la trazabilidad histórica de la plataforma.
+
+## Sesión 2025-10-16 — Depuración integral
+
+* Activado el modo `--full` para validar CLI y scripts auxiliares junto al
+  reporte principal.
+* Registradas las salidas de `feriactl debug report` (vía `python -m
+  feriactl.main`) y del wrapper `dev_debug`
+  con `FERIA_DEBUG=1`.
+* Confirmado que los fallos en comandos fallan la sesión con exit code ≠ 0 y un
+  mensaje explícito en stderr.
+* Guardada la instantánea completa (con `python_path` y `command_results`) en
+  `docs/reports/debug_sessions.jsonl` mediante `--output ... --append`.
+* La primera ejecución fallida permanece registrada como evidencia del
+  comportamiento ante errores; la posterior repetición exitosa valida las
+  comprobaciones con estado `ok`.

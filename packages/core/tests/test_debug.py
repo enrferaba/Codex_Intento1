@@ -25,6 +25,7 @@ def test_collect_snapshot_contains_expected_fields(monkeypatch):
     assert snapshot.git_branch == "main"
     assert snapshot.git_commit == "abc123"
     assert snapshot.git_dirty is False
+    assert snapshot.python_path
 
 
 def test_format_snapshot_returns_json(monkeypatch):
@@ -42,3 +43,4 @@ def test_format_snapshot_returns_json(monkeypatch):
     assert "git_branch" in payload
     assert "working_directory" in payload
     assert "loaded_modules_count" in payload
+    assert "python_path" in payload

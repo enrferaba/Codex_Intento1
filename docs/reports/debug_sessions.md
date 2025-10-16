@@ -7,14 +7,21 @@ hasta el momento y cómo interpretar los registros persistidos.
 ## Sesión actual
 
 - Se amplió la instantánea para capturar `working_directory`, `git_branch`,
-  `git_commit` y el indicador `git_dirty`, lo que permite reproducir el estado
-  exacto del repositorio durante la depuración.
-- `scripts/debug_suite.py` ahora acepta `--output` y `--append`, habilitando un
-  historial JSONL dentro del repositorio sin pasos manuales adicionales.
-- Las pruebas unitarias cubren el flujo de escritura y la acumulación en disco,
-  garantizando que la bitácora no se corrompa al ejecutar sesiones consecutivas.
-- `docs/reports/debug_progress.md` incorpora las instrucciones para mantener el
-  diario histórico y los nuevos campos recogidos.
+  `git_commit`, el indicador `git_dirty` y ahora también `python_path`, lo que
+  permite reproducir el estado exacto del repositorio y de los imports durante
+  la depuración.
+- `scripts/debug_suite.py` admite `--output` y `--append`, y ahora también
+  `--command`/`--full` para ejecutar comprobaciones adicionales (incluyendo
+  `python -m feriactl.main debug report` bajo `FERIA_DEBUG=1`).
+- Las pruebas unitarias cubren el flujo de escritura, la ejecución de comandos y
+  la propagación de códigos de salida, garantizando que la bitácora no se
+  corrompa al ejecutar sesiones consecutivas.
+- `docs/reports/debug_progress.md` incorpora las instrucciones actualizadas para
+  mantener el diario histórico y detalla la sección `command_results` del
+  informe JSON.
+- El registro JSONL conserva tanto ejecuciones exitosas como fallidas (`status`
+  = `ok`/`error`), útil para auditar problemas reproducidos durante sesiones de
+  depuración.
 
 > Ejecuta `python scripts/debug_suite.py --json --output docs/reports/debug_sessions.jsonl --append`
 > para añadir la próxima instantánea cruda asociada a esta entrada.
