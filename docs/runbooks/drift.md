@@ -1,3 +1,4 @@
+<!-- cspell:disable -->
 # Runbook: Drift de consultas/datos
 
 1. Observa alertas `drift` y analiza histogramas de intents.

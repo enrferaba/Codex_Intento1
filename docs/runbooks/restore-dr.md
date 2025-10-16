@@ -1,3 +1,4 @@
+<!-- cspell:disable -->
 # Runbook: Restaurar desde snapshot
 
 1. Selecciona snapshot con `feriactl snapshot list`.

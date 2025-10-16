@@ -1,3 +1,4 @@
+<!-- cspell:disable -->
 # Runbook: Latencia /query P95 alta
 
 1. Revisa `feriactl health --verbose` para confirmar profundidad de colas.

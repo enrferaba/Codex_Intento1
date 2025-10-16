@@ -1,9 +1,9 @@
 [project]
-name = "orchestrator"
+name = "ingestor"
 version = "0.1.0"
-description = "Control plane"
+description = "Ingestor service scaffolding"
 requires-python = ">=3.11"
-dependencies = ["apscheduler>=3.10"]
+dependencies = []
 
 [build-system]
 requires = []

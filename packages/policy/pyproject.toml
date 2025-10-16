@@ -5,5 +5,8 @@ description = "Validadores de políticas"
 requires-python = ">=3.11"
 
 [build-system]
-requires = ["hatchling>=1.24"]
-build-backend = "hatchling.build"
+requires = []
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,3 +1,4 @@
+<!-- cspell:disable -->
 # Runbook: OOM / VRAM alta
 
 1. Identifica workers con `feriactl status` y métricas `gpu_memory_bytes`.
