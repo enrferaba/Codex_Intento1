@@ -15,6 +15,10 @@ class _FakeAPI:
     def __exit__(self, exc_type, exc, tb):
         return False
 
+    @property
+    def resolved_base_url(self) -> str:
+        return "http://fake"
+
     def get_json(self, path: str):
         assert path == "/v1/health"
         return {

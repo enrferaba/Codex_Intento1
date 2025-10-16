@@ -3,15 +3,22 @@
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from typing import Callable
 
+from core.logging import setup as setup_logging
 from feriactl.commands import health, ingest, queues, scale, snapshot, status
 from feriactl.commands.base import CommandResult
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="feriactl", description="Administra FERIA Precision Codex")
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Activa logging DEBUG temporalmente (equivale a FERIA_DEBUG=1)",
+    )
     subparsers = parser.add_subparsers(dest="command")
 
     status_parser = subparsers.add_parser("status", help="Comandos de estado")
@@ -72,6 +79,12 @@ def _bool_flag(value: str) -> bool:
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
+
+    if args.debug:
+        os.environ["FERIA_DEBUG"] = "1"
+
+    setup_logging(force=True)
+
     func = getattr(args, "func", None)
     if func is None:
         parser.print_help()

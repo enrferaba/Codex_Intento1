@@ -47,3 +47,8 @@ def test_base_url_can_be_configured_via_environment(monkeypatch):
 
     assert captured["url"].startswith("http://env")
     monkeypatch.delenv("FERIA_API_URL")
+
+
+def test_resolved_base_url_property_returns_effective_url():
+    with FeriaAPI(base_url="http://test") as api:
+        assert api.resolved_base_url == "http://test"

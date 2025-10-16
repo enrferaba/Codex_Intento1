@@ -2,7 +2,7 @@ PYTHON ?= python3
 POETRY ?= poetry
 UV ?= uv
 
-.PHONY: bootstrap pre-commit dev-up dev-down lint test build-images ingest eval-nightly snapshot restore simulate clean
+.PHONY: bootstrap pre-commit dev-up dev-down lint test debug-test build-images ingest eval-nightly snapshot restore simulate clean
 
 bootstrap:
 $(UV) venv --python $(PYTHON)
@@ -18,6 +18,9 @@ $(UV) run mypy apps packages services
 
 test:
 $(UV) run pytest
+
+debug-test:
+	FERIA_DEBUG=1 $(UV) run pytest -vv
 
 dev-up:
 docker compose --profile dev up -d

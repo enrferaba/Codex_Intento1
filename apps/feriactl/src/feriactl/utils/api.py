@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
+from time import perf_counter
 from typing import Dict, Optional, Protocol
 
 
@@ -61,6 +63,10 @@ class FeriaAPI:
         self._base_url = self.base_url or os.getenv("FERIA_API_URL", "http://localhost:8000")
         self._transport = self.transport or _default_transport
 
+    @property
+    def resolved_base_url(self) -> str:
+        return self._base_url
+
     # Context manager -------------------------------------------------
     def __enter__(self) -> "FeriaAPI":
         return self
@@ -77,7 +83,13 @@ class FeriaAPI:
 
     # Internal helpers ------------------------------------------------
     def _request_json(self, method: str, path: str, payload: Dict[str, object] | None = None) -> Dict[str, object]:
+        logger = logging.getLogger(__name__)
+        start = perf_counter()
         response = self._request(method, path, payload)
+        elapsed_ms = (perf_counter() - start) * 1000
+        logger.debug(
+            "Petición %s %s completada en %.2f ms", method, _join_url(self._base_url, path), elapsed_ms
+        )
         try:
             data = response.json()
         except ValueError as exc:  # pragma: no cover - no debería ocurrir en tests
@@ -92,12 +104,17 @@ class FeriaAPI:
         headers: Dict[str, str] = {}
         if body is not None:
             headers["Content-Type"] = "application/json"
+        logger = logging.getLogger(__name__)
+        url = _join_url(self._base_url, path)
+        logger.debug("Llamando a %s %s", method, url)
         try:
             response = self._transport(method, url, body, headers, self.timeout)
         except TransportError as exc:
+            logger.error("Error de transporte contra %s: %s", url, exc)
             raise FeriaAPIError(f"No se pudo conectar con la API: {exc}") from exc
         if not 200 <= response.status_code < 300:
             detail = _safe_json_error(response)
+            logger.warning("Respuesta no satisfactoria %s %s: %s", method, url, detail)
             raise FeriaAPIError(f"Error {response.status_code} al llamar a {path}: {detail}")
         return response
 

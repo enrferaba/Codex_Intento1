@@ -2,11 +2,15 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Iterable, Sequence, Type
 
 from feriactl.commands.base import CommandResult
 from feriactl.utils.api import FeriaAPI, FeriaAPIError
 from feriactl.utils.tabulate import render
+
+
+logger = logging.getLogger(__name__)
 
 
 def show(base_url: str | None = None, api_factory: Type[FeriaAPI] | None = None) -> CommandResult:
@@ -15,12 +19,15 @@ def show(base_url: str | None = None, api_factory: Type[FeriaAPI] | None = None)
     factory = api_factory or FeriaAPI
     try:
         with factory(base_url=base_url) as api:
+            logger.debug("Solicitando /v1/health a %s", api.resolved_base_url)
             payload = api.get_json("/v1/health")
     except FeriaAPIError as exc:
+        logger.error("Fallo al recuperar el estado del sistema: %s", exc)
         return CommandResult(exit_code=1, stderr=str(exc))
 
     components = _normalise_components(payload.get("components")) if isinstance(payload, dict) else []
     if not components:
+        logger.debug("Respuesta de salud sin componentes: %s", payload)
         return CommandResult(stdout="La API no devolvió componentes de salud.")
 
     table = render(["Componente", "Estado", "Detalle"], components)
