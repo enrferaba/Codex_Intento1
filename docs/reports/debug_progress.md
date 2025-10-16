@@ -19,10 +19,25 @@ estado actual con cualquier persona que abra el proyecto en modo depuración.
    instantánea resumida.
 2. Usar `python scripts/debug_suite.py --json > debug_snapshot.json` cuando se
    necesite compartir los detalles exactos con el equipo.
-3. Lanzar `feriactl --debug debug report` desde cualquier estación para comprobar
+3. Opcionalmente añadir `--output docs/reports/debug_sessions.jsonl --append`
+   para mantener un registro histórico de instantáneas directamente en el
+   repositorio.
+4. Lanzar `feriactl --debug debug report` desde cualquier estación para comprobar
    rápidamente qué flags están activos en los servicios remotos.
-4. Alternativamente, ejecutar `make debug-report` para producir el JSON utilizando
+5. Alternativamente, ejecutar `make debug-report` para producir el JSON utilizando
    el runtime configurado por `uv`.
+
+## Campos adicionales capturados
+
+La instantánea incluye ahora información de Git para contextualizar la sesión de
+depuración:
+
+* `working_directory` — ruta absoluta desde la que se ejecutó el informe.
+* `git_branch` y `git_commit` — referencia corta a la rama y el commit activo.
+* `git_dirty` — indicador booleano de si hay cambios sin confirmar.
+
+Estos campos aparecen tanto en el JSON como en la salida formateada, lo que
+facilita correlacionar la depuración con el estado del repositorio.
 
 ## Qué registrar
 

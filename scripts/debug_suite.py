@@ -47,6 +47,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--json", action="store_true", help="Imprime el informe como JSON bruto")
     parser.add_argument("--run-tests", action="store_true", help="Ejecuta pytest tras generar el informe")
     parser.add_argument("--pytest-args", nargs=argparse.REMAINDER, default=[], help="Argumentos extra para pytest")
+    parser.add_argument("--output", type=Path, help="Ruta donde guardar el informe generado")
+    parser.add_argument(
+        "--append",
+        action="store_true",
+        help="Añade el resultado al archivo en lugar de sobrescribirlo",
+    )
     return parser
 
 
@@ -59,9 +65,20 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.json:
         payload: dict[str, Any] = snapshot.to_dict()
-        print(json.dumps(payload, indent=2, sort_keys=True))
+        rendered = json.dumps(payload, indent=2, sort_keys=True)
     else:
-        print(format_snapshot(snapshot))
+        rendered = format_snapshot(snapshot)
+
+    print(rendered)
+
+    if args.output:
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        mode = "a" if args.append else "w"
+        with args.output.open(mode, encoding="utf-8") as handler:
+            if args.append and handler.tell() != 0:
+                handler.write("\n")
+            handler.write(rendered)
+            handler.write("\n")
 
     if not args.run_tests:
         return 0
