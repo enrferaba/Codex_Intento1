@@ -9,5 +9,8 @@
     "faiss",
     "uvicorn",
     "feriactl"
+  ],
+  "ignorePaths": [
+    "docs/runbooks/**"
   ]
 }
