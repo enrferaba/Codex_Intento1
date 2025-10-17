@@ -1,12 +1,12 @@
 [project]
 name = "api-gateway"
-version = "0.1.0"
-description = "FastAPI gateway"
+version = "0.2.0"
+description = "Gateway HTTP ligero"
 requires-python = ">=3.11"
 dependencies = []
 
 [build-system]
-requires = []
+requires = ["setuptools>=61", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]

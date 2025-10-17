@@ -45,14 +45,19 @@ Referencias rápidas:
 
 La CLI `feriactl` actúa como panel de control local-first.
 
-1. **Estado**: `feriactl status` y `feriactl health --verbose` inspeccionan servicios y SLOs.
-2. **Ingesta**: `feriactl ingest <repo>` lanza pipelines de indexado semántico.
+1. **Estado**: `feriactl status` y `feriactl health --verbose` inspeccionan servicios y SLOs (se apoyan en `/v1/health`).
+2. **Ingesta**: `feriactl ingest <repo>` lanza pipelines de indexado semántico llamando a `/v1/ingest` con los ficheros relevantes.
 3. **Evaluación**: `feriactl eval run --set vX` ejecuta el laboratorio nocturno y genera reportes en `docs/reports/`.
 4. **Snapshots**: `feriactl snapshot create` produce artefactos firmados listos para restauración (`storage/snapshots/`).
-5. **Depuración**: `feriactl debug report` o `python scripts/debug_suite.py --json` generan instantáneas con flags de entorno,
-   nivel de logging efectivo y estado general del entorno de ejecución.
-6. **Simulación de carga**: `python scripts/simulate_load.py --with-governor --target-util 0.8` emula ráfagas por cola, aplica el
-   `GpuGovernor` PID y reporta la escala de concurrencia, micro-batches y límites de tokens recomendados.
+5. **Depuración**: `feriactl debug report` publica la instantánea en `/v1/debug` junto con artefactos; `python scripts/debug_suite.py --json` sigue disponible para auditoría local.
+6. **Simulación de carga**: `python scripts/simulate_load.py --with-governor --target-util 0.8` emula ráfagas por cola, aplica el `GpuGovernor` PID y reporta la escala de concurrencia, micro-batches y límites de tokens recomendados.
+
+### Ejemplo reproducible end-to-end
+
+1. Arranca el API gateway en local: `python -m api_gateway.main` desde `services/api-gateway`.
+2. Desde la raíz del repo ejecuta `feriactl ingest .` para indexar archivos de texto/Markdown del propio proyecto.
+3. Lanza `curl -s http://localhost:8000/v1/query -X POST -H "content-type: application/json" -d '{"query": "Qué es FERIA"}' | jq` para ver la respuesta con citas.
+4. Genera un reporte de depuración: `feriactl debug report --json` y revisa la carpeta indicada en la respuesta.
 
 ### Métricas clave
 
