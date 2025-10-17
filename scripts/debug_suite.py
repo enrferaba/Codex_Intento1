@@ -222,8 +222,6 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     _extend_sys_path()
-    from core.debug import collect_snapshot, format_snapshot
-    from core.logging import setup as setup_logging
 
     parser = build_parser()
     args = parser.parse_args(argv)
