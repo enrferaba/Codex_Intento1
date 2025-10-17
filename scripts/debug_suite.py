@@ -11,7 +11,9 @@ import subprocess
 import sys
 from pathlib import Path
 from time import perf_counter
-from typing import Any, Sequence
+from importlib import import_module
+from types import ModuleType
+from typing import Any, Protocol, Sequence
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -40,6 +42,36 @@ def _extend_sys_path() -> None:
 logger = logging.getLogger(__name__)
 
 MAX_CAPTURE_CHARS = 4000
+
+
+class _Snapshot(Protocol):
+    def to_dict(self) -> dict[str, Any]:
+        ...
+
+
+_MODULE_CACHE: dict[str, ModuleType] = {}
+
+
+def _load(name: str) -> ModuleType:
+    if name not in _MODULE_CACHE:
+        _extend_sys_path()
+        _MODULE_CACHE[name] = import_module(name)
+    return _MODULE_CACHE[name]
+
+
+def collect_snapshot() -> _Snapshot:
+    module = _load("core.debug")
+    return module.collect_snapshot()
+
+
+def format_snapshot(snapshot: _Snapshot) -> str:
+    module = _load("core.debug")
+    return module.format_snapshot(snapshot)
+
+
+def setup_logging() -> None:
+    module = _load("core.logging")
+    module.setup()
 
 DEFAULT_FULL_COMMANDS: list[list[str]] = [
     [sys.executable, "-m", "feriactl.main", "debug", "report", "--json"],
