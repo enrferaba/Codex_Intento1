@@ -60,7 +60,14 @@ class FeriaAPI:
     _transport: Transport = field(init=False)
 
     def __post_init__(self) -> None:
-        self._base_url = self.base_url or os.getenv("FERIA_API_URL", "http://localhost:8000")
+        if self.base_url is not None:
+            resolved_base_url: str = self.base_url
+        else:
+            env_base_url = os.getenv("FERIA_API_URL")
+            if env_base_url is None:
+                env_base_url = "http://localhost:8000"
+            resolved_base_url = env_base_url
+        self._base_url = resolved_base_url
         self._transport = self.transport or _default_transport
 
     @property
