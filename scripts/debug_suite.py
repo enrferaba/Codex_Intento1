@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import importlib
 import json
 import logging
 import os
@@ -30,14 +31,19 @@ EXTRA_PATHS = [
     ROOT / "services/retrieval/src",
 ]
 
-for path in EXTRA_PATHS:
-    if path.exists():
-        entry = str(path)
-        if entry not in sys.path:
-            sys.path.append(entry)
+def _extend_sys_path(paths: Sequence[Path]) -> None:
+    for path in paths:
+        if path.exists():
+            entry = str(path)
+            if entry not in sys.path:
+                sys.path.append(entry)
 
-from core.debug import collect_snapshot, format_snapshot
-from core.logging import setup as setup_logging
+
+def _load_core_dependencies() -> tuple[Any, Any, Any]:
+    _extend_sys_path(EXTRA_PATHS)
+    core_debug = importlib.import_module("core.debug")
+    core_logging = importlib.import_module("core.logging")
+    return core_debug.collect_snapshot, core_debug.format_snapshot, core_logging.setup
 
 logger = logging.getLogger(__name__)
 
@@ -194,6 +200,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
 
+    collect_snapshot, format_snapshot, setup_logging = _load_core_dependencies()
     setup_logging()
     snapshot = collect_snapshot()
 

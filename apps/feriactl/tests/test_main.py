@@ -42,7 +42,6 @@ def test_debug_command_invokes_report(monkeypatch):
 
         return CommandResult(stdout="{}")
 
-    parser = feria_main.build_parser()
     monkeypatch.setattr(feria_main, "setup_logging", lambda **_: None)
     monkeypatch.setattr(feria_main.debug, "report", fake_report)
 
