@@ -30,14 +30,12 @@ EXTRA_PATHS = [
     ROOT / "services/retrieval/src",
 ]
 
-for path in EXTRA_PATHS:
-    if path.exists():
-        entry = str(path)
-        if entry not in sys.path:
-            sys.path.append(entry)
-
-from core.debug import collect_snapshot, format_snapshot
-from core.logging import setup as setup_logging
+def _extend_sys_path() -> None:
+    for path in EXTRA_PATHS:
+        if path.exists():
+            entry = str(path)
+            if entry not in sys.path:
+                sys.path.append(entry)
 
 logger = logging.getLogger(__name__)
 
@@ -191,6 +189,10 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
+    _extend_sys_path()
+    from core.debug import collect_snapshot, format_snapshot
+    from core.logging import setup as setup_logging
+
     parser = build_parser()
     args = parser.parse_args(argv)
 
