@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.background import BackgroundScheduler  # type: ignore[import-not-found]
 
 scheduler = BackgroundScheduler()
 
