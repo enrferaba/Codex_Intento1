@@ -143,7 +143,7 @@ class GpuGovernor:
         )
 
 
-def _clamp(value: float, lower: float, upper: float) -> float:
+def _clamp(value: float, lower: float | None, upper: float | None) -> float:
     lower = -inf if lower is None else lower
     upper = inf if upper is None else upper
     if value < lower:
