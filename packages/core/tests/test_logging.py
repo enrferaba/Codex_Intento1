@@ -4,8 +4,6 @@ import logging
 import os
 from contextlib import contextmanager
 
-import pytest
-
 from core import logging as core_logging
 
 
