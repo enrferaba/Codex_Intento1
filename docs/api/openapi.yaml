@@ -1,17 +1,41 @@
 openapi: 3.1.0
 info:
   title: FERIA Precision Codex API
-  version: 0.1.0
+  version: 0.2.0
 paths:
   /v1/health:
     get:
-      summary: Health check
+      summary: Estado del gateway y sus dependencias
       responses:
         '200':
-          description: Successful health response
+          description: Estado operativo del servicio
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  version:
+                    type: string
+                    example: 0.2.0
+                  uptime_seconds:
+                    type: integer
+                  components:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        status:
+                          type: string
+                        detail:
+                          type: string
   /v1/query:
     post:
-      summary: Ejecuta una consulta semántica
+      summary: Ejecuta una consulta semántica contra los documentos ingeridos
       requestBody:
         required: true
         content:
@@ -21,7 +45,137 @@ paths:
               properties:
                 query:
                   type: string
-              required: [query]
+                  description: Pregunta del usuario
+                limit:
+                  type: integer
+                  minimum: 1
+                  maximum: 10
+              required:
+                - query
       responses:
         '200':
-          description: Respuesta con citas
+          description: Respuesta con citas relevantes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  answer:
+                    type: string
+                    example: "FERIA es una plataforma de orquestación"
+                  citations:
+                    type: array
+                    items:
+                      type: string
+                  confidence:
+                    type: number
+                    format: float
+                  documents:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        path:
+                          type: string
+                        snippet:
+                          type: string
+                        score:
+                          type: number
+  /v1/ingest:
+    post:
+      summary: Ingiere documentos para su posterior consulta
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                repository:
+                  type: string
+                  description: Identificador lógico de la ingesta
+                modes:
+                  type: array
+                  items:
+                    type: string
+                documents:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      path:
+                        type: string
+                      text:
+                        type: string
+                    required:
+                      - path
+                      - text
+              required:
+                - repository
+                - documents
+      responses:
+        '201':
+          description: Ingesta aceptada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  job_id:
+                    type: string
+                  document_count:
+                    type: integer
+                  accepted_modes:
+                    type: array
+                    items:
+                      type: string
+  /v1/debug:
+    post:
+      summary: Registra una sesión de depuración con artefactos adjuntos
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                path:
+                  type: string
+                error_text:
+                  type: string
+                modes:
+                  type: array
+                  items:
+                    type: string
+                metadata:
+                  type: object
+                artifacts:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      content:
+                        type: string
+                      content_type:
+                        type: string
+                    required:
+                      - name
+                      - content
+              required:
+                - path
+      responses:
+        '201':
+          description: Sesión registrada correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  debug_id:
+                    type: string
+                  location:
+                    type: string
+                  artifact_count:
+                    type: integer

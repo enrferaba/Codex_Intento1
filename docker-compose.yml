@@ -3,11 +3,13 @@ version: "3.9"
 services:
   api-gateway:
     build: ./services/api-gateway
-    command: python -c "print('api-gateway dev container')"
+    command: python -m api_gateway.main
     environment:
       - FERIA_ENV=dev
+      - FERIA_STORAGE_PATH=/data
     volumes:
       - ./services/api-gateway:/app
+      - ./storage/api-gateway:/data
     ports:
       - "8000:8000"
     depends_on:

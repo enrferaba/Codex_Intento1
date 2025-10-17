@@ -1,56 +1,40 @@
-"""Ruta de salud minimalista."""
+"""Ruta de salud con detalles operativos."""
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
-import logging
 from typing import Final
 
-from core.logging import setup as setup_logging
 from api_gateway.framework import Router
+from api_gateway.services.debug import get_debug_recorder
+from api_gateway.services.documents import get_document_store
 
 router = Router(prefix="/v1")
 
 _SERVICE_START: Final[datetime] = datetime.now(timezone.utc)
-_SERVICE_VERSION: Final[str] = "0.1.0"
-
-
-logger = logging.getLogger(__name__)
-
-
-@dataclass(slots=True)
-class ComponentStatus:
-    name: str
-    status: str
-    detail: str | None = None
-
-
-@dataclass(slots=True)
-class HealthPayload:
-    status: str
-    version: str
-    uptime_seconds: int
-    components: list[ComponentStatus]
-
-    def to_dict(self) -> dict[str, object]:
-        return {
-            "status": self.status,
-            "version": self.version,
-            "uptime_seconds": self.uptime_seconds,
-            "components": [asdict(component) for component in self.components],
-        }
+_SERVICE_VERSION: Final[str] = "0.2.0"
 
 
 @router.get("/health")
-def health() -> dict[str, object]:
-    setup_logging()
+def health(_: dict[str, object] | None = None) -> tuple[int, dict[str, object]]:
     uptime = datetime.now(timezone.utc) - _SERVICE_START
-    payload = HealthPayload(
-        status="ok",
-        version=_SERVICE_VERSION,
-        uptime_seconds=max(int(uptime.total_seconds()), 0),
-        components=[ComponentStatus(name="api-gateway", status="ok")],
-    )
-    logger.debug("Generando respuesta de salud: %s", payload)
-    return payload.to_dict()
+    store_stats = get_document_store().stats()
+    debug_stats = get_debug_recorder().stats()
+    payload = {
+        "status": "ok",
+        "version": _SERVICE_VERSION,
+        "uptime_seconds": max(int(uptime.total_seconds()), 0),
+        "components": [
+            {
+                "name": "document-store",
+                "status": "ok" if store_stats["documents"] else "empty",
+                "detail": f"{store_stats['documents']} docs / {store_stats['repositories']} repos",
+            },
+            {
+                "name": "debug-recorder",
+                "status": "ok",
+                "detail": f"{debug_stats['events']} eventos",
+            },
+        ],
+    }
+    return 200, payload
