@@ -76,7 +76,7 @@ class GpuGovernor:
         self._config = config or GovernorConfig()
         self._integral = 0.0
         self._last_error = 0.0
-        self._last_time = None
+        self._last_time: float | None = None
 
     def reset(self) -> None:
         self._integral = 0.0
